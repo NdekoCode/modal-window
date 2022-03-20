@@ -1,0 +1,13 @@
+{
+  "name": "fenetre-modale",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "sass ./assets/scss/app.scss ./assets/css/app.css --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
