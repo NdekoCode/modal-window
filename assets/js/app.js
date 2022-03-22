@@ -32,7 +32,6 @@ const openModal = function (evt) {
   modal.style.display = null;
   // On met les focus apres le display car le display:none n'accepte pas le focus
   focusElements[0].focus();
-  console.log(focusElements[0].focus());
   modal.removeAttribute('aria-hidden');
   modal.setAttribute('aria-modal', true);
 
@@ -42,6 +41,7 @@ const openModal = function (evt) {
     closeModal(evt);
   })
   modal.querySelector('.js-modal-stop').addEventListener('click', stopPropagation);
+  modal.removeEventListener('animationend',hiddenModal)
 }
 
 /**
@@ -53,23 +53,32 @@ const closeModal = function (evt) {
   evt.preventDefault();
   if (modal === null) return
   // On verifie si le previouslyFocusedElement n'est pas vide si il n'est pas vide on lui redonne le focus
-  if (previouslyFocusedElement !== null) {
-    previouslyFocusedElement.focus();
-  }
-  window.setTimeout(function () {
-
-    modal.style.display = 'none';
-    modal = null;
-
-  }, 400);
+  if (previouslyFocusedElement !== null) previouslyFocusedElement.focus();
+  /** Animation-reverse
+  // On demande au navigateur de redessinner pendant un petit moment pour que l'on puisse jouer l'animation `animation-reversse` dans le modal de nouveau
+  modal.style.display='none';
+  // On demande au navigateur de faire un repaint
+  modal.offsetWidth;
+  modal.style.display = null; //Ainsi on utilise la meme animation pour l'ouverture et la fermeture du Modal et on economise ainsi du code CSS
+    */
   modal.setAttribute('aria-hidden', 'true');
   modal.removeAttribute('aria-modal');
   modal.removeEventListener('click', closeModal);
   modal.querySelector('.js-modal-close').removeEventListener('click', closeModal);
   modal.querySelector('.js-modal-stop').removeEventListener('click', stopPropagation);
+  // Et à la fin de l'animation on lui demande encore de remettre les display 'none' et le modal à null
+  console.log("BUm");
+  // Pour eviter le risque d'accumuler le meme evenement plein de fois, la meilleur astuce est de creer une fonction qui fait ceux dont on a besoin
+  // Ainsi on l'appel au fermeture mais on le supprime à l'ouverture
+  modal.addEventListener('animationend', hiddenModal);
 
 }
 
+
+const hiddenModal = function () {
+  modal.style.display = 'none';
+  modal = null;
+}
 /**
  * Permet d'empecher la propagation des evenement vers les parents
  *
