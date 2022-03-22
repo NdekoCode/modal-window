@@ -17,18 +17,26 @@ let previouslyFocusedElement = null;
 
 
 /**
- *Permet d'ouvrir une boite modal au click sur le lien d'ouverture
+ * @description Permet d'ouvrir une boite modal au click sur le lien d'ouverture
+ * @author NdekoCode
  * @param {PointerEvent} evt
  */
-const openModal = function (evt) {
+const openModal = async function (evt) {
   evt.preventDefault();
   // On recupère aussi l'ancre à fin de trouver l'element qui est cible comme Modal
   // On sauvegarde la boite modal qu'on vient d'ouvrir
-  modal = document.querySelector(evt.target.getAttribute('href'));
+  const target = evt.target.getAttribute('href');
+  if(target.startsWith('#')) {
+    modal = document.querySelector(target);
+  }else {
+    // On attend le chargement de la modal avant de continuer
+    modal = await loadModal(target);
+  }
   // On recupere dans le DOM l'element qui a le focus de la tabulation avant l'ouverture de la fenetre modal
   previouslyFocusedElement = document.querySelector(':focus');
-  // On les recupère sous forme des tableaux
+  // On recupère tous les elements focussable à la tabulation sous forme des tableaux
   focusElements = Array.from(modal.querySelectorAll(focusableSelector));
+  // On met le display du modal à visible
   modal.style.display = null;
   // On met les focus apres le display car le display:none n'accepte pas le focus
   focusElements[0].focus();
@@ -43,6 +51,8 @@ const openModal = function (evt) {
   modal.querySelector('.js-modal-stop').addEventListener('click', stopPropagation);
   modal.removeEventListener('animationend',hiddenModal)
 }
+
+
 
 /**
  * Permet de fermer une boite modal
@@ -74,11 +84,41 @@ const closeModal = function (evt) {
 
 }
 
-
+/**
+ * Permet de cacher la fenetre modal et ainsi eviter que l'evenement `animationend` ne puisse se repeter
+ */
 const hiddenModal = function () {
   modal.style.display = 'none';
   modal = null;
 }
+
+/**
+ * @description  Permettra de charger une fenetre modal en AJAX
+ * @author NdekoCode
+ * @param {String} url L'URL que je souhaite charger
+ */
+const loadModal = async function (url) {
+  // TODO : Ajouter Un loader en Attendant que le contenus se charger
+  const target = `#${url.split('#')[1]}`;
+  const existingModal = document.querySelector(target);
+  console.log(existingModal);
+  // On verifie si on a pas déjà de Modal dans le DOM si on l'a deja on le charge sinon on en part charger un nouveau
+  if(existingModal !== null) return existingModal;
+  console.log(existingModal);
+  // On attend que le fetch aie été resolus et on va recuperer que du Texte sous forme HTML mais sans fondement HTML
+  const html = await fetch(url).then(res => res.text());
+  // On convertis ce texte sans fondement en un Texte fragmenter en vrais HTMTL ce qui va nous donner une sorte de nouveau DOM bidon
+  const element = document.createRange().createContextualFragment(html);
+  // On fait querySelector sur ce nouveau document pour obtenir notre modal en question
+  const modal = element.querySelector(target);
+  // Si l'element n'est pas trouver on emmet une exception
+  if(modal === null || modal == undefined) throw new Error(`L'element ${target} n'est pas trouver dans la page ${url}`)
+  // On ajoute à notre body le modal recuperer en AJAX
+  document.body.append(modal);
+
+  return modal;
+}
+
 /**
  * Permet d'empecher la propagation des evenement vers les parents
  *
