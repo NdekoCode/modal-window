@@ -1,11 +1,19 @@
-*, *::before, *::after {
+@charset "UTF-8";
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-body, html {
+body,
+html {
   margin: 0;
   padding: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+*:focus {
+  box-shadow: 0 0 10px #6f6fe9;
 }
 
 .modal {
@@ -18,16 +26,24 @@ body, html {
   align-items: center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.8);
+  animation: fadeIn 0.4s both;
+}
+.modal[aria-hidden=true] {
+  animation: fadeOut 0.4s both;
+}
+.modal[aria-hidden=true] .modal-wrapper {
+  animation: slideToBottom 0.4s 0.03s;
 }
 .modal .modal-wrapper {
   width: 600px;
   min-width: 65%;
-  max-width: calc( 100vw - 20px);
+  max-width: calc(100vw - 20px);
   max-height: calc(100vh - 20px);
   padding: 20px;
   overflow: auto;
   background-color: #fff;
   position: relative;
+  animation: slideFromTop 0.4s both 0.03s;
 }
 .modal .js-modal-close {
   background-color: transparent;
@@ -42,6 +58,42 @@ body, html {
   display: block;
   max-width: 100%;
   height: auto;
+}
+
+/**
+ * Lorsque le display d'un element change donc un element lorsqu'il passe d'un display:none à un display:visibe l'animation se lance par defaut
+ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes slideFromTop {
+  from {
+    transform: translateY(-50px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes slideToBottom {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(50px);
+  }
 }
 
 /*# sourceMappingURL=app.css.map */

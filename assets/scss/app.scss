@@ -1,10 +1,17 @@
-*,*::before,*::after{
-    box-sizing:border-box;
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
 }
-body,html{
-    margin:0;
-    padding:0;
+
+body,
+html {
+    margin: 0;
+    padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+*:focus{
+    box-shadow: 0 0 10px rgb(111, 111, 233);
 }
 .modal {
     position: fixed;
@@ -16,30 +23,77 @@ body,html{
     align-items: center;
     justify-content: center;
     background-color: rgba(0, 0, 0, 0.8);
+    animation: fadeIn 0.4s both;// au debut de l'animation au prendra les valeurs dans `from` par defaut et à la fin de l'animation on gardera les valeurs dans `to`
+    &[aria-hidden="true"] {
+        animation: fadeOut 0.4s both;
+        .modal-wrapper {
+            animation: slideToBottom 0.4s 0.03s;
+        }
+    }
+    .modal-wrapper {
+        width: 600px;
+        min-width: 65%;
+        max-width: calc(100vw - 20px);
+        max-height: calc(100vh - 20px);
+        padding: 20px;
+        overflow: auto;
+        background-color: #fff;
+        position: relative;
+        animation: slideFromTop 0.4s both 0.03s;
+    }
 
-     .modal-wrapper {
-         width: 600px;
-         min-width:65%;
-         max-width: calc( 100vw - 20px);
-         max-height: calc(100vh - 20px);
-         padding:20px;
-         overflow: auto;
-         background-color: #fff;
-         position: relative;
-     }
-     .js-modal-close{
-         background-color: transparent;
-         border: none;
-         cursor: pointer;
-         position: absolute;
-         top: 10px;
-         right: 10px;
-         padding: 5px;
-         img{
-             display: block;
-             max-width: 100%;
-             height: auto;
-         }
+    .js-modal-close {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 5px;
 
-     }
+        img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+
+    }
+}
+/**
+ * Lorsque le display d'un element change donc un element lorsqu'il passe d'un display:none à un display:visibe l'animation se lance par defaut
+ */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    
+    to{
+        opacity: 1;
+    }
+}
+@keyframes slideFromTop {
+    from {
+        transform: translateY(-50px);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+@keyframes slideToBottom {
+    from {
+        transform: translateY(0);
+    }
+    to {
+        transform: translateY(50px);
+    }
 }
